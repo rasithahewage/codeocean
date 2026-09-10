@@ -63,13 +63,13 @@ services:
       - codeocean_net
 
   nomad-client:
-    image: hashicorp/nomad:1.5.8
+    build:
+      context: ./nomad-client
+      dockerfile: Dockerfile
     container_name: nomad-client
-    command: agent -client -bind=0.0.0.0 -data-dir=/nomad/data -config=/nomad/config/client.hcl
     privileged: true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./nomad/client:/nomad/config
       - nomad_data:/nomad/data
     depends_on:
       - nomad
