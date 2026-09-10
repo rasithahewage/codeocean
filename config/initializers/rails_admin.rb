@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+RailsAdmin::Config::Fields::Types.register(:interval, RailsAdmin::Config::Fields::Types.load(:string))
+
 RailsAdmin.config do |config|
   config.asset_source = :webpacker
   ### Popular gems integration
