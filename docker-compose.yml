@@ -44,8 +44,6 @@ services:
       dockerfile: Dockerfile
     image: poseidon:latest
     container_name: codeocean-poseidon
-    volumes:
-      - ./poseidon/configuration.yaml:/app/configuration.yaml
     networks:
       - codeocean_net
     depends_on:
