@@ -1,0 +1,96 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_DB: codeocean_production
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - codeocean_net
+
+  redis:
+    image: redis:latest
+    restart: always
+    networks:
+      - codeocean_net
+
+  codeocean:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - postgres
+      - redis
+      - poseidon
+      - prometheus_exporter
+    env_file:
+      - .env
+    ports:
+      - "7000:7000"
+    networks:
+      - codeocean_net
+    volumes:
+      - ./config:/rails/config
+      - codeocean_storage:/rails/storage
+      - codeocean_logs:/rails/log
+
+  poseidon:
+    build:
+      context: ./poseidon
+      dockerfile: Dockerfile
+    image: poseidon:latest
+    container_name: codeocean-poseidon
+    volumes:
+      - ./poseidon/configuration.yaml:/app/configuration.yaml
+    networks:
+      - codeocean_net
+    depends_on:
+      - nomad
+
+  nomad:
+    image: hashicorp/nomad:1.5.8
+    container_name: nomad-server
+    ports:
+      - "4660:4646"
+    cap_add:
+      - IPC_LOCK
+    command: agent -dev -bind=0.0.0.0
+    networks:
+      - codeocean_net
+
+  nomad-client:
+    image: hashicorp/nomad:1.5.8
+    container_name: nomad-client
+    command: agent -client -bind=0.0.0.0 -data-dir=/nomad/data -config=/nomad/config/client.hcl
+    privileged: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./nomad/client:/nomad/config
+      - nomad_data:/nomad/data
+    depends_on:
+      - nomad
+    networks:
+      - codeocean_net
+
+  prometheus_exporter:
+    image: ruby:3.3
+    container_name: prometheus_exporter
+    command: sh -c "gem install prometheus_exporter && prometheus_exporter -b 0.0.0.0 -p 9394"
+    expose:
+      - "9394"
+    networks:
+      - codeocean_net
+
+volumes:
+  postgres_data:
+  codeocean_storage:
+  codeocean_logs:
+  nomad_data:
+
+networks:
+  codeocean_net:
