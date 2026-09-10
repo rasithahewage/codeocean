@@ -35,7 +35,6 @@ services:
     networks:
       - codeocean_net
     volumes:
-      - ./config:/rails/config
       - codeocean_storage:/rails/storage
       - codeocean_logs:/rails/log
 
