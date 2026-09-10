@@ -1,0 +1,25 @@
+default: &default
+  default_options:
+    from: 'CodeOcean <DoNotReply@codeocean.german-uds.de>'
+
+development:
+  <<: *default
+  default_url_options:
+    host: localhost
+    port: 7000
+  # Open mails in the browser (not compatible with Vagrant)
+  delivery_method: :letter_opener
+  # Print mails to the console
+  # delivery_method: :test
+
+production:
+  <<: *default
+  default_url_options:
+    host: smtp.azurecomm.net
+  delivery_method: :smtp
+
+test:
+  <<: *default
+  default_url_options:
+    host: example.com
+  delivery_method: :test

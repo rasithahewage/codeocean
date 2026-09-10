@@ -1,0 +1,88 @@
+default: &default
+  # The following legal URLs are displayed in the help modal of the application.
+  # legal:
+    # imprint_url: https://open.hpi.de/pages/imprint
+    # privacy_policy_url: https://open.hpi.de/pages/data-protection
+
+  # A public-facing host to be used for the render_file function of the SubmissionsController.
+  # User content will be served from this host. If not set, the default host is used (less secure!).
+  # render_host: codeocean.openhpiusercontent.de
+
+  flowr:
+    # When enabled, flowr can assist learners with related search results from
+    # StackOverflow.com regarding exceptions that occurred during code execution.
+    # The search is initiated through the learners' browser and displayed in the output pane.
+    enabled: false
+    # The number of search results to be displayed
+    answers_per_query: 3
+
+  codeharbor:
+    # When enabled, CodeHarbor is integrated in the teachers' view and allows importing
+    # and exporting exercises from CodeOcean using the ProFormA XML format to CodeHarbor.
+    enabled: false
+    # The root URL of CodeHarbor
+    url: https://codeharbor.openhpi.de
+
+  codeocean_events:
+    # When enabled, learner-specific events within the editor are stored and can be used
+    # as part of learning analytics. This setting enables the JavaScript event handlers.
+    enabled: false
+
+  prometheus_exporter:
+    # When enabled, a dedicated endpoint using the Prometheus format is offered and might
+    # be used by a Prometheus-compatible monitoring system. Exported metrics include absolute
+    # counters of all relations with specific support for Request-for-Comments.
+    enabled: false
+
+  runner_management:
+    # When enabled, CodeOcean delegates the handling and management of (containerized) runners
+    # to a dedicated runner management. Otherwise, code executions are performed locally using
+    # Docker and without pre-warming support (one container per execution).
+    enabled: true
+    # The strategy to use. Possible values are: poseidon, docker_container_pool
+    strategy: poseidon
+    # The root URL of the runner management to use (include any API prefix if required)
+    # If a hostname is specified and the target host is reachable via IPv6, the WebSocket
+    # connection might not use the IPv6-to-IPv4 fallback but rather fail unexpectedly.
+    url: http://127.0.0.1:7200/api/v1
+    # The root certificate authority to trust for TLS connections to the runner management (Poseidon only)
+    # ca_file: /example/certificates/ca.crt
+    # The authorization token for connections to the runner management (Poseidon only)
+    # If TLS support is not enabled, this token is transmitted in clear text!
+    # token: SECRET
+    # The maximum time in seconds a runner may idle at the runner management before it is removed.
+    # Each begin of an interaction with the runner resets this time. Thus, this value should
+    # be truly greater than any permitted execution time of an execution environment.
+    unused_runner_expiration_time: 180
+
+  content_moderation:
+    # Learners can report inappropriate content, such as offensive RfCs or comments.
+    # For each report, an email is sent to all addresses listed below. If no address is
+    # configured, learners cannot report user-generated content.
+    report_emails:
+      # - report@example.com
+
+development:
+  <<: *default
+  flowr:
+    enabled: true
+  codeharbor:
+    enabled: true
+  content_moderation:
+    report_emails:
+      - report@example.com
+
+
+production:
+  <<: *default
+  prometheus_exporter:
+    enabled: true
+  runner_management:
+    enabled: true
+    strategy: poseidon
+    url: http://poseidon:7200/api/v1
+    unused_runner_expiration_time: 180  
+
+
+test:
+  <<: *default
