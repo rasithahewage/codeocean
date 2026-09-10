@@ -88,3 +88,4 @@ yarn-debug.log*
 
 # Ignore automatically generated JavaScript files.
 /app/javascript/generated/*
+.env
