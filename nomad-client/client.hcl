@@ -2,7 +2,7 @@ data_dir = "/nomad/data"
 
 client {
   enabled = true
-  servers = ["nomad:4646"]
+  servers = ["nomad:4647"]
 }
 
 plugin "docker" {
